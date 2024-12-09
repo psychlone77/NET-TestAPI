@@ -54,7 +54,7 @@ namespace TestAPI.Controllers
             var result = await _videoGameService.UpdateVideoGameAsync(id, game);
             if (result is null)
             {
-                return BadRequest();
+                return NotFound();
             }
             return Ok(result);
         }

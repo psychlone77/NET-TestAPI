@@ -1,7 +1,6 @@
 ﻿using DAL.Repository.Interface;
 using BLL.Services.Interface;
 using BLL.Models;
-using BLL.Models.MappingProfile;
 using AutoMapper;
 using DAL.Entites;
 
