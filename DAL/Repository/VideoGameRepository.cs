@@ -20,6 +20,8 @@ namespace DAL.Repository
         }
         public async Task<VideoGameEntity> AddVideoGame(VideoGameEntity newGame)
         {
+            newGame.Created = DateTime.UtcNow;
+            newGame.Updated = DateTime.UtcNow;
             _dbSet.Add(newGame);
             await _context.SaveChangesAsync();
             return newGame;
@@ -35,6 +37,7 @@ namespace DAL.Repository
             game.Publisher = newGame.Publisher;
             game.Developer = newGame.Developer;
             game.Platform = newGame.Platform;
+            game.Updated = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             return game;
         }
