@@ -1,20 +1,19 @@
-// import { useState } from 'react'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { ReactQueryDevtools } from 'react-query/devtools'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-import './App.css'
-import VideoGamesComponent from './components/VideoGames'
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
+import "./App.css";
+import VideoGamesPage from "./pages/VideoGamesPage";
 
 function App() {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: 0, refetchOnWindowFocus: false } },
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
-      <VideoGamesComponent/>
+      <VideoGamesPage />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  )
+  );
 }
 
-export default App
+export default App;
