@@ -1,25 +1,23 @@
 ﻿using AutoMapper;
-using BLL.Models;
+using BLL.DTOs;
 using BLL.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
-using TestAPI.DTOs;
 
 namespace TestAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public class VideoGameController(IVideoGameService videoGameService, IMapper mapper) : ControllerBase
+    public class VideoGameController(IVideoGameService videoGameService) : ControllerBase
     {
         private readonly IVideoGameService _videoGameService = videoGameService;
-        private readonly IMapper _mapper = mapper;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<VideoGameResponseDTO>))]
         public async Task<ActionResult<List<VideoGameResponseDTO>>> GetVideoGames()
         {
-            List<VideoGame> videoGames = await _videoGameService.GetVideoGamesAsync();
-            return Ok(_mapper.Map<List<VideoGameResponseDTO>>(videoGames));
+            List<VideoGameResponseDTO> videoGames = await _videoGameService.GetVideoGamesAsync();
+            return Ok(videoGames);
         }
 
         [HttpGet]
@@ -29,9 +27,7 @@ namespace TestAPI.Controllers
         public async Task<ActionResult> GetVideoGameById(int id)
         {
             var game = await _videoGameService.GetVideoGameByIdAsync(id);
-            if (game == null)
-                return NotFound();
-            return Ok(_mapper.Map<VideoGameResponseDTO>(game));
+            return Ok(game);
         }
 
         [HttpPost]
@@ -41,21 +37,15 @@ namespace TestAPI.Controllers
         {
             if (newGame is null)
                 return BadRequest();
-            var game = _mapper.Map<VideoGame>(newGame);
-            return Created(nameof(game),await _videoGameService.AddVideoGameAsync(game));
+            return Created(nameof(newGame),await _videoGameService.AddVideoGameAsync(newGame));
         }
 
         [HttpPut]
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(VideoGameResponseDTO))]
-        public async Task<IActionResult> UpdateVideoGame(int id, VideoGameRequestDTO newGame)
+        public async Task<IActionResult> UpdateVideoGame(int id, VideoGameRequestDTO updatedGame)
         {
-            VideoGame game = _mapper.Map<VideoGame>(newGame);
-            var result = await _videoGameService.UpdateVideoGameAsync(id, game);
-            if (result is null)
-            {
-                return NotFound();
-            }
+            var result = await _videoGameService.UpdateVideoGameAsync(id, updatedGame);
             return Ok(result);
         }
 
@@ -65,10 +55,6 @@ namespace TestAPI.Controllers
         public async Task<ActionResult> DeleteVideoGame(int id)
         {
             var game = await _videoGameService.DeleteVideoGameAsync(id);
-            if (game is null)
-            {
-                return NotFound();
-            }
             return Ok(game);
         }
 

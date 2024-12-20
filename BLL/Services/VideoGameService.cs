@@ -1,6 +1,6 @@
 ﻿using DAL.Repository.Interface;
 using BLL.Services.Interface;
-using BLL.Models;
+using BLL.DTOs;
 using AutoMapper;
 using DAL.Entites;
 
@@ -11,57 +11,42 @@ namespace BLL.Services
         private readonly IVideoGameRepository _repository = repository;
         private readonly IMapper _mapper = mapper;
 
-        public async Task<List<VideoGame>> GetVideoGamesAsync()
+        public async Task<List<VideoGameResponseDTO>> GetVideoGamesAsync()
         {
             List<VideoGameEntity> videoGameEntities = await _repository.GetVideoGames();
-            return _mapper.Map<List<VideoGame>>(videoGameEntities);
+            return _mapper.Map<List<VideoGameResponseDTO>>(videoGameEntities);
         }
-        public async Task<VideoGame?> GetVideoGameByIdAsync(int id)
+        public async Task<VideoGameResponseDTO> GetVideoGameByIdAsync(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(id);
             VideoGameEntity? videoGameEntity = await _repository.GetVideoGameById(id);
-            return _mapper.Map<VideoGame?>(videoGameEntity);
+            if (videoGameEntity is null)
+                throw new KeyNotFoundException($"No video game found with id {id}");
+            return _mapper.Map<VideoGameResponseDTO>(videoGameEntity);
         }
-        public async Task<VideoGame> AddVideoGameAsync(VideoGame newGame)
+        public async Task<VideoGameResponseDTO> AddVideoGameAsync(VideoGameRequestDTO newGame)
         {
-            ValidateVideoGame(newGame);
             VideoGameEntity newGameEntity = _mapper.Map<VideoGameEntity>(newGame);
             VideoGameEntity result = await _repository.AddVideoGame(newGameEntity);
-            return _mapper.Map<VideoGame>(result);
+            return _mapper.Map<VideoGameResponseDTO>(result);
 
         }
-        public async Task<VideoGame?> DeleteVideoGameAsync(int id)
+        public async Task<VideoGameResponseDTO> DeleteVideoGameAsync(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(id);
             VideoGameEntity? videoGameEntity = await _repository.DeleteVideoGame(id);
-            return _mapper.Map<VideoGame?>(videoGameEntity);
+            if (videoGameEntity is null)
+                throw new KeyNotFoundException($"No video game found with id {id}");
+            return _mapper.Map<VideoGameResponseDTO>(videoGameEntity);
         }
-        public async Task<VideoGame?> UpdateVideoGameAsync(int id, VideoGame newGame)
+        public async Task<VideoGameResponseDTO> UpdateVideoGameAsync(int id, VideoGameRequestDTO newGame)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(id);
-            ValidateVideoGame(newGame);
             VideoGameEntity newGameEntity = _mapper.Map<VideoGameEntity>(newGame);
             VideoGameEntity? result = await _repository.UpdateVideoGame(id, newGameEntity);
-            return _mapper.Map<VideoGame>(result);
-        }
-        private static void ValidateVideoGame(VideoGame game)
-        {
-            if (string.IsNullOrWhiteSpace(game.Title))
-            {
-                throw new ArgumentException("Title is required.");
-            }
-            if (string.IsNullOrWhiteSpace(game.Developer))
-            {
-                throw new ArgumentException("Developer is required.");
-            }
-            if (string.IsNullOrWhiteSpace(game.Platform))
-            {
-                throw new ArgumentException("Platform is required.");
-            }
-            if (string.IsNullOrWhiteSpace(game.Publisher))
-            {
-                throw new ArgumentException("Publisher is required.");
-            }
+            if (result is null)
+                throw new KeyNotFoundException($"No video game found with id {id}");
+            return _mapper.Map<VideoGameResponseDTO>(result);
         }
     }
 }

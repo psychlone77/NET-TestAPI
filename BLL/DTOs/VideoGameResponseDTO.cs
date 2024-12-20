@@ -1,4 +1,4 @@
-﻿namespace TestAPI.DTOs
+﻿namespace BLL.DTOs
 {
     public class VideoGameResponseDTO
     {

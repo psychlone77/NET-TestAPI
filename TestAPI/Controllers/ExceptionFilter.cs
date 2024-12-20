@@ -16,6 +16,10 @@ namespace TestAPI.Controllers
             {
                 statusCode = StatusCodes.Status400BadRequest;
             }
+            else if (context.Exception is KeyNotFoundException)
+            {
+                statusCode = StatusCodes.Status404NotFound;
+            }
 
             context.Result = new ObjectResult(new
             {

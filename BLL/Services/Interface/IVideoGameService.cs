@@ -1,13 +1,13 @@
-﻿using BLL.Models;
+﻿using BLL.DTOs;
 
 namespace BLL.Services.Interface
 {
     public interface IVideoGameService
     {
-        Task<List<VideoGame>> GetVideoGamesAsync();
-        Task<VideoGame?> GetVideoGameByIdAsync(int id);
-        Task<VideoGame> AddVideoGameAsync(VideoGame newGame);
-        Task<VideoGame?> UpdateVideoGameAsync(int id, VideoGame newGame);
-        Task<VideoGame?> DeleteVideoGameAsync(int id);
+        Task<List<VideoGameResponseDTO>> GetVideoGamesAsync();
+        Task<VideoGameResponseDTO> GetVideoGameByIdAsync(int id);
+        Task<VideoGameResponseDTO> AddVideoGameAsync(VideoGameRequestDTO newGame);
+        Task<VideoGameResponseDTO> UpdateVideoGameAsync(int id, VideoGameRequestDTO newGame);
+        Task<VideoGameResponseDTO> DeleteVideoGameAsync(int id);
     }
 }
