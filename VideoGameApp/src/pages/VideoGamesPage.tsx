@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery } from "react-query";
 import {
   PaginatedResponse,
@@ -7,7 +7,6 @@ import {
 } from "../types/types";
 import VideoGameForm from "../components/VideoGameForm";
 import {
-  fetchAllVideoGames,
   fetchAllVideoGamesPaginated,
 } from "../actions/videoGameActions";
 import {
@@ -149,7 +148,7 @@ export default function VideoGamesPage() {
       <Pagination
         defaultPage={page}
         count={Math.ceil((data?.totalCount ?? 0) / pageSize)}
-        onChange={(e, value) => {setPage(value); pageRef.current = value}}
+        onChange={(_e, value) => {setPage(value); pageRef.current = value}}
       />
     </>
   );
