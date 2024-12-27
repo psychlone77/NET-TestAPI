@@ -12,12 +12,20 @@ namespace TestAPI.Controllers
     {
         private readonly IVideoGameService _videoGameService = videoGameService;
 
+        [Obsolete("This method is deprecated, use GetVideoGamesPaginatedAsync instead.")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<VideoGameResponseDTO>))]
         public async Task<ActionResult<List<VideoGameResponseDTO>>> GetVideoGames()
         {
             List<VideoGameResponseDTO> videoGames = await _videoGameService.GetVideoGamesAsync();
             return Ok(videoGames);
+        }
+
+        [HttpGet]
+        [Route("paginated")]
+        public async Task<IActionResult> GetVideoGamesPaginated(int page = 1, int pageSize = 10)
+        {
+            return Ok(await _videoGameService.GetVideoGamesPaginatedAsync(page, pageSize));
         }
 
         [HttpGet]

@@ -52,5 +52,19 @@ namespace DAL.Repository
             await _context.SaveChangesAsync();
             return toDeleteGame;
         }
+
+        public async Task<int> GetVideoGamesCount()
+        {
+            return await _dbSet.CountAsync();
+        }
+
+        public async Task<List<VideoGameEntity>> GetVideoGames(int page, int pageSize)
+        {
+            var paginatedGames = _dbSet
+                .OrderBy(x => x.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+            return await paginatedGames.ToListAsync();
+        }
     }
 }

@@ -16,6 +16,21 @@ namespace BLL.Services
             List<VideoGameEntity> videoGameEntities = await _repository.GetVideoGames();
             return _mapper.Map<List<VideoGameResponseDTO>>(videoGameEntities);
         }
+        public async Task<PaginatedResponseDTO<VideoGameResponseDTO>> GetVideoGamesPaginatedAsync(int page, int pageSize)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(page);
+            ArgumentOutOfRangeException.ThrowIfNegative(pageSize);
+            var numberOfVideoGames = await _repository.GetVideoGamesCount();
+            if ((page - 1) * pageSize > numberOfVideoGames)
+                throw new ArgumentOutOfRangeException($"Page {page} with page size {pageSize} is out of bounds");
+            List<VideoGameEntity> videoGameEntities = await _repository.GetVideoGames(page, pageSize);
+            return new PaginatedResponseDTO<VideoGameResponseDTO>{
+                TotalCount = numberOfVideoGames,
+                Page = page,
+                PageSize = pageSize,
+                VideoGames = _mapper.Map<List<VideoGameResponseDTO>>(videoGameEntities)
+            };
+        }
         public async Task<VideoGameResponseDTO> GetVideoGameByIdAsync(int id)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(id);
