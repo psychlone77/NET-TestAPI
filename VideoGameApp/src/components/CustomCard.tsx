@@ -15,7 +15,7 @@ export default function CustomCard({
       sx={{
         padding: 2,
         maxWidth: 345,
-        maxHeight: 160,
+        height: 160,
         cursor: "pointer",
         backgroundColor: "#f9f9f9",
         borderRadius: 2,

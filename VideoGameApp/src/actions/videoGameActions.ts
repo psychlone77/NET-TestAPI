@@ -1,11 +1,16 @@
 import axios from "axios";
-import { VideoGameRequest, VideoGameResponse } from "../types/types";
+import { PaginatedResponse, VideoGameRequest, VideoGameResponse } from "../types/types";
 import { VideoGameRequestSchema } from "../types/schemas";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 export async function fetchAllVideoGames(): Promise<VideoGameResponse[]> {
     const response = await axios.get(`${baseURL}/api/VideoGame`);
+    return response.data;
+}
+
+export async function fetchAllVideoGamesPaginated(page: number, pageSize: number): Promise<PaginatedResponse> {
+    const response = await axios.get(`${baseURL}/api/VideoGame/paginated?page=${page}&pageSize=${pageSize}`);
     return response.data;
 }
 

@@ -1,20 +1,31 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
-import { QueryError, VideoGameResponse } from "../types/types";
+import {
+  PaginatedResponse,
+  QueryError,
+  VideoGameResponse,
+} from "../types/types";
 import VideoGameForm from "../components/VideoGameForm";
-import { fetchAllVideoGames } from "../actions/videoGameActions";
+import {
+  fetchAllVideoGames,
+  fetchAllVideoGamesPaginated,
+} from "../actions/videoGameActions";
 import {
   Alert,
   Box,
   CircularProgress,
   Typography,
   Grid2 as Grid,
+  Pagination,
 } from "@mui/material";
 import CustomCard from "../components/CustomCard";
 import VideoGameCard from "../components/VideoGameCard";
 import { toast, ToastContainer } from "react-toastify";
 
 export default function VideoGamesPage() {
+  const pageRef = useRef(1);
+  const [page, setPage] = useState(pageRef.current);
+  const pageSize = 10;
   const [showForm, setShowForm] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [selectedGame, setSelectedGame] = useState<VideoGameResponse>({
@@ -38,9 +49,9 @@ export default function VideoGamesPage() {
     setShowUpdateForm(true);
   };
 
-  const { data, isLoading, isError, error } = useQuery<VideoGameResponse[]>(
-    "videogames",
-    fetchAllVideoGames,
+  const { data, isLoading, isError, error } = useQuery<PaginatedResponse>(
+    ["videogames", page],
+    () => fetchAllVideoGamesPaginated(page, pageSize),
     {
       staleTime: 3000,
     }
@@ -93,7 +104,7 @@ export default function VideoGamesPage() {
         theme="light"
       />
       <Grid container spacing={4} columns={{ md: 3, lg: 4 }} padding={4}>
-        {data?.map((game) => (
+        {data?.videoGames.map((game) => (
           <Grid size={{ xs: 1, md: 1 }} key={game.id}>
             <VideoGameCard onClick={() => handleEditClick(game)} game={game} />
           </Grid>
@@ -118,23 +129,28 @@ export default function VideoGamesPage() {
       </Grid>
       {showForm ? (
         <VideoGameForm
-          title={"Add a Video Game"}
-          open={showForm}
-          handleClose={() => setShowForm(false)}
-          notifySuccess={notifySuccess}
-          notifyError={notifyError}
+        title={"Add a Video Game"}
+        open={showForm}
+        handleClose={() => setShowForm(false)}
+        notifySuccess={notifySuccess}
+        notifyError={notifyError}
         />
       ) : null}
       {showUpdateForm ? (
         <VideoGameForm
-          title={"Update a Video Game"}
-          open={showUpdateForm}
-          handleClose={() => setShowUpdateForm(false)}
-          notifySuccess={notifySuccess}
-          notifyError={notifyError}
-          initialValues={selectedGame}
+        title={"Update a Video Game"}
+        open={showUpdateForm}
+        handleClose={() => setShowUpdateForm(false)}
+        notifySuccess={notifySuccess}
+        notifyError={notifyError}
+        initialValues={selectedGame}
         />
       ) : null}
+      <Pagination
+        defaultPage={page}
+        count={Math.ceil((data?.totalCount ?? 0) / pageSize)}
+        onChange={(e, value) => {setPage(value); pageRef.current = value}}
+      />
     </>
   );
 }
