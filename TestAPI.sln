@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{D
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "VideoGameApp", "VideoGameApp\VideoGameApp.esproj", "{C2CFA63A-159F-4107-9F18-2BE05AA31197}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VideoGameServer", "VideoGameServer", "{EDE45FFD-F446-4AF6-BDD4-9FDC699E6254}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,5 +40,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B2532D32-4944-4495-8563-9D4C8CFE786E} = {EDE45FFD-F446-4AF6-BDD4-9FDC699E6254}
+		{C74AA9F3-338B-4288-9DD9-BA373F217DFC} = {EDE45FFD-F446-4AF6-BDD4-9FDC699E6254}
+		{DBD3189E-91CA-400D-9278-59EA0A0E08ED} = {EDE45FFD-F446-4AF6-BDD4-9FDC699E6254}
 	EndGlobalSection
 EndGlobal

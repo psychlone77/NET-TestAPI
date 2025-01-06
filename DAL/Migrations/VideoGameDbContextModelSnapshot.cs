@@ -50,7 +50,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VideoGames");
+                    b.ToTable("VideoGames", (string)null);
 
                     b.HasData(
                         new

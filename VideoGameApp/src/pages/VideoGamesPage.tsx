@@ -1,30 +1,26 @@
-import { useRef, useState } from "react";
-import { useQuery } from "react-query";
+import { useState } from "react";
 import {
-  PaginatedResponse,
-  QueryError,
   VideoGameResponse,
 } from "../types/types";
 import VideoGameForm from "../components/VideoGameForm";
 import {
-  fetchAllVideoGamesPaginated,
-} from "../actions/videoGameActions";
-import {
-  Alert,
   Box,
-  CircularProgress,
   Typography,
-  Grid2 as Grid,
-  Pagination,
+  Button,
+  ToggleButtonGroup,
+  ToggleButton,
+  useTheme,
 } from "@mui/material";
-import CustomCard from "../components/CustomCard";
-import VideoGameCard from "../components/VideoGameCard";
 import { toast, ToastContainer } from "react-toastify";
+import InfiniteScrollView from "../components/InfiniteScrollView";
+import { AllInclusive, GridView } from "@mui/icons-material";
+import TableView from "../components/TableView";
 
 export default function VideoGamesPage() {
-  const pageRef = useRef(1);
-  const [page, setPage] = useState(pageRef.current);
-  const pageSize = 10;
+  const theme = useTheme();
+  const [displayType, setDisplayType] = useState<"infinite" | "paginated">(
+    "infinite"
+  );
   const [showForm, setShowForm] = useState(false);
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [selectedGame, setSelectedGame] = useState<VideoGameResponse>({
@@ -48,46 +44,6 @@ export default function VideoGamesPage() {
     setShowUpdateForm(true);
   };
 
-  const { data, isLoading, isError, error } = useQuery<PaginatedResponse>(
-    ["videogames", page],
-    () => fetchAllVideoGamesPaginated(page, pageSize),
-    {
-      staleTime: 3000,
-    }
-  );
-
-  if (isLoading)
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          width: "100vw",
-        }}
-      >
-        <CircularProgress size={80} />
-      </Box>
-    );
-
-  if (isError)
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          width: "100vw",
-        }}
-      >
-        <Alert severity="error" sx={{ width: "200px", fontSize: "16px" }}>
-          <Typography>{(error as QueryError).message}</Typography>
-        </Alert>
-      </Box>
-    );
-
   return (
     <>
       <ToastContainer
@@ -100,56 +56,65 @@ export default function VideoGamesPage() {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="light"
+        theme={theme.palette.mode}
       />
-      <Grid container spacing={4} columns={{ md: 3, lg: 4 }} padding={4}>
-        {data?.videoGames.map((game) => (
-          <Grid size={{ xs: 1, md: 1 }} key={game.id}>
-            <VideoGameCard onClick={() => handleEditClick(game)} game={game} />
-          </Grid>
-        ))}
-        <Grid size={{ xs: 1, md: 1 }}>
-          <CustomCard
-            onClick={() => setShowForm(true)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              "&:hover": {
-                transform: "scale(1.05)",
-                backgroundColor: "#000000",
-                color: "white",
-              },
-            }}
-          >
-            <Typography variant="h1">+</Typography>
-          </CustomCard>
-        </Grid>
-      </Grid>
+      <Typography variant="h2" align="center">
+        Video Games
+      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        marginTop={2}
+        width={"100%"}
+        paddingX={5}
+      >
+        <Button
+          sx={{
+            background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+            color: "white",
+          }}
+          variant="contained"
+          onClick={() => setShowForm(true)}
+        >
+          Add a Video Game
+        </Button>
+        <ToggleButtonGroup
+          value={displayType}
+          exclusive
+          onChange={(_e, value) => setDisplayType(value)}
+        >
+          <ToggleButton value="infinite">
+            <AllInclusive />
+          </ToggleButton>
+          <ToggleButton value="paginated">
+            <GridView />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+      {displayType === "paginated" ? (
+        <TableView handleEditClick={handleEditClick}/>
+      ) : (
+        <InfiniteScrollView handleEditClick={handleEditClick} />
+      )}
       {showForm ? (
         <VideoGameForm
-        title={"Add a Video Game"}
-        open={showForm}
-        handleClose={() => setShowForm(false)}
-        notifySuccess={notifySuccess}
-        notifyError={notifyError}
+          title={"Add a Video Game"}
+          open={showForm}
+          handleClose={() => setShowForm(false)}
+          notifySuccess={notifySuccess}
+          notifyError={notifyError}
         />
       ) : null}
       {showUpdateForm ? (
         <VideoGameForm
-        title={"Update a Video Game"}
-        open={showUpdateForm}
-        handleClose={() => setShowUpdateForm(false)}
-        notifySuccess={notifySuccess}
-        notifyError={notifyError}
-        initialValues={selectedGame}
+          title={"Update a Video Game"}
+          open={showUpdateForm}
+          handleClose={() => setShowUpdateForm(false)}
+          notifySuccess={notifySuccess}
+          notifyError={notifyError}
+          initialValues={selectedGame}
         />
       ) : null}
-      <Pagination
-        defaultPage={page}
-        count={Math.ceil((data?.totalCount ?? 0) / pageSize)}
-        onChange={(_e, value) => {setPage(value); pageRef.current = value}}
-      />
     </>
   );
 }
